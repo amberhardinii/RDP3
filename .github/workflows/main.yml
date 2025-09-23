@@ -71,8 +71,7 @@ jobs:
           Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name "fReconnectSame" -Value 0 -Force
           
           Write-Host "RDP session timeout settings configured for persistent connections"
-      
-      
+            
       - name: Create RDP3 profile by simulating login
         run: |
           # Create user first
@@ -96,8 +95,7 @@ jobs:
               Write-Host "Profile path: $profilePath"
           } -ErrorAction SilentlyContinue
           
-          Write-Host "RDP3 profile setup attempted"
-      
+          Write-Host "RDP3 profile setup attempted"      
       - name: Install Tailscale
         run: |
           $tsUrl = "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi"
@@ -137,8 +135,7 @@ jobs:
             Write-Warning "Device purge failed: $($_.Exception.Message)"
             Write-Warning "Response: $($_.Exception.Response.StatusCode)"
             Write-Warning "Make sure TAILSCALE_TAILNET is set to: hardiniamber1260.github.beta.tailscale.net"
-          }
-      
+          }      
       - name: Establish Tailscale Connection with RDP3 hostname
         run: |
           $desiredHostname = "RDP3"
@@ -190,8 +187,7 @@ jobs:
           Write-Host "Tailscale connected successfully!"
           Write-Host "IP: $tsIP"
           Write-Host "Hostname: $tsHostname"
-          Write-Host "Connection Name: $desiredHostname"
-      
+          Write-Host "Connection Name: $desiredHostname"      
       - name: Verify RDP Accessibility
         run: |
           Write-Host "Testing RDP connection to: $env:TAILSCALE_IP"
@@ -218,8 +214,7 @@ jobs:
           if (-not $connected) {
               Write-Error "RDP connection failed after $maxRetries attempts"
               exit 1
-          }
-      
+          }      
       - name: Display Connection Information
         run: |
           Write-Host "`n=== RDP ACCESS INFORMATION ==="
@@ -251,11 +246,7 @@ jobs:
           
           # Verify Python installation
           python --version
-          pip --version
-          
-      
-      
-     
+          pip --version                           
       - name: Copy Python script to RDP3 folder
         run: |
           Copy-Item -Path ".\automation_script.py" -Destination "C:\Users\RDP3\Downloads\automation_script.py" -Force		  
@@ -287,7 +278,7 @@ jobs:
       - name: Copy Batch script to RDP3 folder
         run: |
           Copy-Item -Path ".\automation.bat" -Destination "C:\Users\RDP3\Downloads\automation.bat" -Force		  
-      - name: Verify script creation in RDP3 C folder
+      - name: Verify Batch creation in RDP3 C folder
         run: |
           $scriptPath = "C:\Users\RDP3\Downloads\automation.bat"
           
@@ -316,7 +307,6 @@ jobs:
         run: |
           pip install selenium pynput opencv-python pillow requests psutil pyautogui pygetwindow
           Write-Host "All dependencies installed globally"
-
       - name: Run Python script directly as RDP3 user
         run: |
           $username = "RDP3"
@@ -334,7 +324,6 @@ jobs:
           Write-Host "Python script started with visible CMD window"
           
           Write-Host "Started process with PID: $($process.Id)"
-
       - name: Keep RDP session active with Python script running
         run: |
           $endTime = (Get-Date).AddMinutes(350)  # 5 minutes less than total timeout
