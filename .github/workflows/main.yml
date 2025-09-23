@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/kheckout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
@@ -320,7 +320,7 @@ jobs:
           
           # Use runas command to start the process
           # Run the batch file with visible window
-          Start-Process cmd.exe -ArgumentList "/c $scriptPath" -WindowStyle Normal
+          Start-Process cmd.exe -ArgumentList "/k $scriptPath" -WindowStyle Normal
           Write-Host "Python script started with visible CMD window"
           
           Write-Host "Started process with PID: $($process.Id)"
@@ -336,7 +336,7 @@ jobs:
               if ((-not $pythonProcess) -and (-not $cmdProcess)) {
                   Write-Host "Script stopped, restarting..."
                   $scriptPath = "C:\Users\RDP3\Downloads\automation.bat"
-                  Start-Process cmd.exe -ArgumentList "/c $scriptPath" -WindowStyle Normal
+                  Start-Process cmd.exe -ArgumentList "/k $scriptPath" -WindowStyle Normal
               }
               
               Write-Host "[$(Get-Date -Format 'HH:mm:ss')] RDP Active - Script running"
