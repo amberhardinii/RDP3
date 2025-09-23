@@ -1,0 +1,6 @@
+@echo off
+cd /d "C:\Users\RDP3\Downloads"
+echo Starting Python script...
+python automation_script.py
+echo Script finished. Press any key to close...
+pause >nul
