@@ -230,23 +230,7 @@ jobs:
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "**Password:** `${{ secrets.RDP3_FIXED_PASSWORD }}"
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "**Session Started:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
           
-      - name: Install Python and dependencies
-        run: |
-          # Check if Python is already installed
-          if (Get-Command python -ErrorAction SilentlyContinue) {
-              Write-Host "Python is already installed"
-          } else {
-              Write-Host "Installing Python..."
-              Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe" -OutFile "$env:TEMP\python-installer.exe"
-              Start-Process "$env:TEMP\python-installer.exe" -ArgumentList "/quiet", "InstallAllUsers=1", "PrependPath=1", "Include_test=0" -Wait
-              Remove-Item "$env:TEMP\python-installer.exe" -Force
-              # Refresh PATH environment variable
-              $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-          }
-          
-          # Verify Python installation
-          python --version
-          pip --version                           
+              
       - name: Copy Python script to RDP3 folder
         run: |
           Copy-Item -Path ".\automation_script.py" -Destination "C:\Users\RDP3\Downloads\automation_script.py" -Force		  
@@ -275,55 +259,7 @@ jobs:
                   }
               }
           }
-      - name: Copy Batch script to RDP3 folder
-        run: |
-          Copy-Item -Path ".\automation.bat" -Destination "C:\Users\RDP3\Downloads\automation.bat" -Force		  
-      - name: Verify Batch creation in RDP3 C folder
-        run: |
-          $scriptPath = "C:\Users\RDP3\Downloads\automation.bat"
-          
-          if (Test-Path $scriptPath) {
-              Write-Host "✓ Script created successfully at: $scriptPath"
-              Write-Host "File size: $( (Get-Item $scriptPath).Length ) bytes"
-          } else {
-              Write-Host "✗ Script was not created in RDP3 C folder"
-              Write-Host "Checking alternative locations..."
-              
-              # Check a few possible locations
-              $possiblePaths = @(
-                  "C:\Users\RDP3\Downloads\automation.bat",
-                  "C:\Users\RDP3\Documents\automation.bat",
-                  "$env:TEMP\automation.bat"
-              )
-              
-              foreach ($path in $possiblePaths) {
-                  if (Test-Path $path) {
-                      Write-Host "Found script at: $path"
-                      break
-                  }
-              }
-          }          
-      - name: Pre-install Python dependencies
-        run: |
-          pip install selenium pynput opencv-python pillow requests psutil pyautogui pygetwindow
-          Write-Host "All dependencies installed globally"
-      - name: Run Python script directly as RDP3 user
-        run: |
-          $username = "RDP3"
-          $password = "${{ secrets.RDP3_FIXED_PASSWORD }}"
-          
-          # Ensure script exists
-          $scriptPath = "C:\Users\RDP3\Downloads\automation.bat"
-          if (-not (Test-Path $scriptPath)) {
-              Copy-Item -Path ".\automation.bat" -Destination $scriptPath -Force
-          }
-          
-          # Use runas command to start the process
-          # Run the batch file with visible window
-          Start-Process cmd.exe -ArgumentList "/k $scriptPath" -WindowStyle Normal
-          Write-Host "Python script started with visible CMD window"
-          
-          Write-Host "Started process with PID: $($process.Id)"
+     
       - name: Keep RDP session active with Python script running
         run: |
           $endTime = (Get-Date).AddMinutes(350)  # 5 minutes less than total timeout
